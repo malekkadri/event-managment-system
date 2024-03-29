@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ 'title.event_list'|trans }}
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'title.event_list'|trans }}</h1>
+        <nav>
+            <ul class="events-submenu">
+                <li>
+                    <a href="{{ url('event_create') }}" title="{{ 'action.create'|trans }}">
+                        {{ 'action.create'|trans }}
+                    </a>
+                </li>
+                <li>
+                      <a href="{{ url('event_list') }}" title="{{ 'title.event_list_all'|trans }}">
+                        {{ 'title.event_list_all'|trans }}
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+    <h2>{{ 'title.event_active'|trans }}</h2>
+
+    {% if pagination is defined and pagination.items|length %}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>{{ knp_pagination_sortable(pagination, 'label.date_from'|trans, 'event.dateFrom') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'label.time_from'|trans, 'event.timeFrom') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'label.date_to'|trans, 'event.dateTo') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'label.time_to'|trans, 'event.timeTo') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'label.title'|trans, 'event.title') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'label.category'|trans, 'event.category.title' )}}</th>
+                <th>{{ 'label.tags'|trans }}</th>
+                <th>{{ 'label.actions'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for event in pagination.items %}
+
+                <tr>
+                    <td class="date">{{ event.dateFrom|date('d.m.Y') }}</td>
+                    <td class="time">{{ event.timeFrom|date('H:i') }}</td>
+                    <td class="date">{{ event.dateTo|date('d.m.Y') }}</td>
+                    <td class="time">{{ event.timeTo|date('H:i')}}</td>
+                    <td>{{ event.title }}</td>
+                    <td class="table-element">{{ event.category.title }}</td>
+                    <td class="table-element">{{ event.tags|join(', ') }}</td>
+                    <td>
+                        <a href="{{ url('event_show', {id: event.id}) }}" title="{{ 'action.show'|trans }}">
+                            {{ 'action.show'|trans }}
+                        </a>
+                    </td>
+                </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="navigation text-center">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+
+    {% else %}
+        <p>
+            {{ 'message.empty_list'|trans }}
+        </p>
+    {% endif %}
+
+    {# EVENTS UPCOMING #}
+    <div class="d-flex justify-content-between">
+        <h2>{{ 'title.event_upcoming'|trans }}</h2>
+
+        <a style="align-self: center;" class="btn btn-warning btn-sm" href="{{ url('event_index') }}" title="{{ 'title.clear_filters'|trans }}">
+            {{ 'title.clear_filters'|trans }}
+        </a>
+    </div>
+
+    {% if upcoming is defined and upcoming.items|length %}
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>{{ knp_pagination_sortable(upcoming, 'label.date_from'|trans, 'event.dateFrom') }}</th>
+                <th>{{ knp_pagination_sortable(upcoming, 'label.time_from'|trans, 'event.timeFrom') }}</th>
+                <th>{{ knp_pagination_sortable(upcoming, 'label.title'|trans, 'event.title') }}</th>
+                <th>{{ knp_pagination_sortable(upcoming, 'label.category'|trans, 'event.category.title' )}}</th>
+                <th>{{ 'label.tags'|trans }}</th>
+                <th>{{ 'label.actions'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for event in upcoming.items %}
+
+                <tr>
+                    <td class="date">{{ event.dateFrom|date('d.m.Y') }}</td>
+                    <td class="time">{{ event.timeFrom|date('H:i') }}</td>
+                    <td>{{ event.title }}</td>
+                    <td>
+                        <a href="{{ url('event_index', {'filters.category_id' : event.category.id}) }}" title="{{ event.category.title }}">
+                            {{ event.category.title }}
+                        </a>
+                    </td>
+                    <td>
+                        {% if event.tags is defined and event.tags|length %}
+                            {% for tag in event.tags %}
+                                <a href="{{ url('event_index', {'filters.tag_id' : tag.id}) }}" title="{{ tag.title }}">
+                                    {{ tag.title }}
+                                </a>
+                            {% endfor %}
+                        {% else %}
+                            &nbsp;
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url('event_show', {id: event.id}) }}" title="{{ 'action.show'|trans }}">
+                            {{ 'action.show'|trans }}
+                        </a>
+                    </td>
+                </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="navigation text-center">
+            {{ knp_pagination_render(upcoming) }}
+        </div>
+
+
+    {% else %}
+        <p>
+            {{ 'message.empty_list'|trans }}
+        </p>
+    {% endif %}
+
+
+{% endblock %}
